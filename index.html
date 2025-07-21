@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Free Streaming Site</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #111;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .video-card {
+      background: #222;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .video-card h3 {
+      font-size: 16px;
+      margin: 10px 0 5px;
+    }
+    video {
+      width: 100%;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📽️ My Free Streaming Site</h1>
+
+  <div class="video-grid">
+
+    <div class="video-card">
+      <video controls>
+        <source src="https://archive.org/download/NightOfTheLivingDead/NightOfTheLivingDead_512kb.mp4" type="video/mp4" />
+      </video>
+      <h3>Night of the Living Dead (1968)</h3>
+    </div>
+
+    <div class="video-card">
+      <video controls>
+        <source src="https://archive.org/download/Plan_9_from_Outer_Space/Plan_9_from_Outer_Space_512kb.mp4" type="video/mp4" />
+      </video>
+      <h3>Plan 9 from Outer Space (1959)</h3>
+    </div>
+
+    <div class="video-card">
+      <video controls>
+        <source src="https://archive.org/download/The_Brain_That_Wouldnt_Die/The_Brain_That_Wouldnt_Die_512kb.mp4" type="video/mp4" />
+      </video>
+      <h3>The Brain That Wouldn't Die (1962)</h3>
+    </div>
+
+  </div>
+</body>
+</html>
