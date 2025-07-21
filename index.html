@@ -3,34 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Free Streaming Site</title>
+  <title>Internet Archive Video Search</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       background-color: #111;
       color: #fff;
-      margin: 0;
+      font-family: Arial, sans-serif;
       padding: 20px;
+      margin: 0;
     }
 
     h1 {
       text-align: center;
     }
 
-    #search {
+    #searchBar {
       display: block;
-      margin: 0 auto 20px auto;
-      padding: 10px;
       width: 90%;
       max-width: 400px;
+      margin: 0 auto 20px auto;
+      padding: 10px;
       font-size: 16px;
-      border: none;
       border-radius: 5px;
+      border: none;
     }
 
     .video-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 20px;
     }
 
@@ -38,57 +38,93 @@
       background: #222;
       border-radius: 10px;
       padding: 10px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .video-card:hover {
+      background: #333;
     }
 
     .video-card h3 {
-      margin-top: 10px;
       font-size: 16px;
+      margin-top: 10px;
     }
 
-    iframe {
-      width: 100%;
-      height: 200px;
-      border: none;
+    #player {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    #player iframe {
+      width: 90%;
+      max-width: 640px;
+      height: 360px;
       border-radius: 10px;
+      border: none;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎬 My Free Streaming Site</h1>
+  <h1>📼 Archive Video Search</h1>
 
-  <input type="text" id="search" placeholder="Search movies...">
+  <input type="text" id="searchBar" placeholder="Search Archive.org videos...">
 
-  <div class="video-grid" id="videoGrid">
+  <div class="video-grid" id="resultsGrid"></div>
 
-    <div class="video-card" data-title="Sita Sings the Blues">
-      <iframe src="https://archive.org/embed/Sita_Sings_the_Blues" allowfullscreen></iframe>
-      <h3>Sita Sings the Blues (2008)</h3>
-    </div>
-
-    <div class="video-card" data-title="Night of the Living Dead">
-      <iframe src="https://archive.org/embed/NightOfTheLivingDead" allowfullscreen></iframe>
-      <h3>Night of the Living Dead (1968)</h3>
-    </div>
-
-    <div class="video-card" data-title="Sherlock Holmes">
-      <iframe src="https://archive.org/embed/SherlockHolmes-TheCaseOfTheTexasCowboy" allowfullscreen></iframe>
-      <h3>Sherlock Holmes: The Case of the Texas Cowboy (1954)</h3>
-    </div>
-
-  </div>
+  <div id="player"></div>
 
   <script>
-    const searchInput = document.getElementById('search');
-    const videoCards = document.querySelectorAll('.video-card');
+    const searchBar = document.getElementById('searchBar');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const player = document.getElementById('player');
 
-    searchInput.addEventListener('input', () => {
-      const searchTerm = searchInput.value.toLowerCase();
-      videoCards.forEach(card => {
-        const title = card.getAttribute('data-title').toLowerCase();
-        card.style.display = title.includes(searchTerm) ? 'block' : 'none';
-      });
+    searchBar.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const query = searchBar.value.trim();
+        if (query) {
+          fetchVideos(query);
+        }
+      }
     });
+
+    async function fetchVideos(query) {
+      resultsGrid.innerHTML = '🔍 Searching...';
+      player.innerHTML = '';
+
+      const apiUrl = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}+AND+mediatype:movies&fl[]=identifier,title&rows=12&page=1&output=json`;
+
+      try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+
+        if (data.response.docs.length === 0) {
+          resultsGrid.innerHTML = '😕 No results found.';
+          return;
+        }
+
+        resultsGrid.innerHTML = '';
+
+        data.response.docs.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'video-card';
+          card.innerHTML = `<h3>${item.title}</h3>`;
+          card.onclick = () => {
+            player.innerHTML = `
+              <h2>${item.title}</h2>
+              <iframe src="https://archive.org/embed/${item.identifier}" allowfullscreen></iframe>
+            `;
+            window.scrollTo({ top: player.offsetTop - 20, behavior: 'smooth' });
+          };
+          resultsGrid.appendChild(card);
+        });
+
+      } catch (err) {
+        resultsGrid.innerHTML = '⚠️ Error loading videos.';
+        console.error(err);
+      }
+    }
   </script>
 
 </body>
